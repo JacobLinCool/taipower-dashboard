@@ -50,6 +50,7 @@
                             class="plant"
                             v-for="plant of plants"
                             :key="plant.name"
+                            tabindex="0"
                         >
                             <h3
                                 :class="
@@ -88,6 +89,14 @@
                             </div>
                         </div>
                     </div>
+                </div>
+                <div id="social">
+                    <a
+                        href="https://github.com/JacobLinCool/taipower-dashboard"
+                        target="_blank"
+                    >
+                        Github
+                    </a>
                 </div>
             </div>
         </div>
@@ -215,7 +224,7 @@ body {
 #head > .front > .usage > #usage-label {
     top: 1vw;
 
-    font-size: min(2vw, 24px);
+    font-size: min(4vw, 30px);
     font-weight: bold;
 }
 
@@ -316,6 +325,7 @@ body {
 }
 
 .plant {
+    height: 30px;
     margin: 4px 0;
 
     border-radius: 5px;
@@ -324,7 +334,9 @@ body {
     transition: all 0.3s;
 }
 
-.plant:hover {
+.plant:hover,
+.plant:focus {
+    height: 180px;
     padding: 0 10px;
     box-shadow: 0px 2px 6px 0px grey;
 }
@@ -335,7 +347,8 @@ body {
     transition: all 0.3s;
 }
 
-.plant:hover > h3 {
+.plant:hover > h3,
+.plant:focus > h3 {
     margin: 0 0 8px;
     font-size: 1.5rem;
 }
@@ -343,14 +356,10 @@ body {
 .plant > .plant-data {
     width: 100%;
 
-    display: none;
+    display: grid;
     grid-template-columns: 50% 50%;
     grid-template-rows: auto;
     grid-gap: 0;
-}
-
-.plant:hover > .plant-data {
-    display: grid;
 }
 
 .plant > .plant-data > div {
@@ -365,5 +374,16 @@ body {
 
 .plant-not-generating {
     color: rgb(160, 160, 160);
+}
+
+#social {
+    width: 100%;
+    min-height: 60px;
+    margin: 24px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
 }
 </style>
