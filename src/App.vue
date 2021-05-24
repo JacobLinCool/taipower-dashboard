@@ -377,7 +377,7 @@ body {
 }
 
 #social {
-    width: 100%;
+    width: calc(100% - 48px);
     min-height: 60px;
     margin: 24px;
 
