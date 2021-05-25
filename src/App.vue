@@ -510,10 +510,12 @@ body {
     top: 0;
     left: 0;
     width: calc(100% - 48px);
-    height: 100%;
+    height: calc(100% - 48px);
     padding: 24px;
 
     background: white;
+
+    overflow: auto;
 }
 
 #help-page > .close {
