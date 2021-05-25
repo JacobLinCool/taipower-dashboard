@@ -3,6 +3,9 @@
         <div id="white-paper">
             <div id="head">
                 <div class="front" v-if="taipower">
+                    <div class="help" @click="show_help = !show_help">
+                        <span>說明</span>
+                    </div>
                     <div class="usage">
                         <span id="usage-label">總用電量 / 總發電量 (MW)</span>
                         <span id="usage-value"
@@ -24,7 +27,7 @@
                 </div>
             </div>
             <div id="body" v-if="taipower">
-                <div id="plants-wrap">
+                <div id="plants-wrap" :class="`${color ? 'color-card' : ''}`">
                     <div
                         class="plant-type-wrap"
                         v-for="[type, plants] of Object.entries(
@@ -47,13 +50,21 @@
                             ></div>
                         </h2>
                         <div
-                            :class="
-                                'plants-display-' + (fold ? 'normal' : 'grid')
-                            "
+                            :class="`plants-display-${
+                                fold ? 'normal' : 'grid'
+                            }`"
                         >
                             <div
-                                class="plant"
                                 v-for="plant of plants"
+                                :class="`plant ${
+                                    plant.percentage >= 80
+                                        ? 'high'
+                                        : plant.percentage >= 40
+                                        ? 'medium'
+                                        : plant.percentage > 0
+                                        ? 'low'
+                                        : 'zero'
+                                }-usage`"
                                 :key="plant.name"
                                 tabindex="0"
                             >
@@ -112,17 +123,23 @@
                     Source Code on GitHub
                 </a>
             </div>
+            <div id="help-page" v-show="show_help">
+                <div class="close" @click="show_help = !show_help">關閉</div>
+                <Help></Help>
+            </div>
         </div>
     </div>
 </template>
 
 <script setup>
+import Help from "./components/help.vue";
 import swal from "sweetalert2";
 import { ref, onMounted } from "vue";
 import { get_data } from "./js/data.js";
 
 let config = {
     fold: true,
+    color: false,
 };
 
 try {
@@ -134,7 +151,20 @@ try {
     }
 } catch (e) {}
 
+try {
+    config.color = true;
+    if (
+        JSON.parse(new URLSearchParams(location.search).get("color")) !== null
+    ) {
+        config.color = !!JSON.parse(
+            new URLSearchParams(location.search).get("color")
+        );
+    }
+} catch (e) {}
+
 const fold = config.fold;
+const color = config.color;
+const show_help = ref(false);
 
 const taipower = ref(false);
 const get_taipower_data = async () => {
@@ -234,6 +264,30 @@ body {
 
 #head > .front {
     z-index: 2;
+}
+
+.help {
+    z-index: 200;
+    position: absolute;
+    right: 5%;
+    top: -2px;
+    height: min(4.5vw, 35px);
+    padding: 3px 6px;
+
+    border: 1px solid gray;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0px 2px 3px 1px lightgrey;
+
+    font-size: min(4vw, 30px);
+    font-weight: bold;
+
+    cursor: pointer;
+
+    transition: all 0.3s;
+}
+.help:hover {
+    top: -4px;
+    box-shadow: 0px 2px 3px 2px lightgrey;
 }
 
 #head > .front > .usage {
@@ -369,6 +423,19 @@ body {
     transition: all 0.3s;
 }
 
+.color-card .plant.high-usage {
+    background: #b4f8c825;
+}
+.color-card .plant.medium-usage {
+    background: #fbe7c625;
+}
+.color-card .plant.low-usage {
+    background: #ffaebc25;
+}
+.color-card .plant.zero-usage {
+    background: #ffffff25;
+}
+
 .plant:hover,
 .plant:focus,
 .plants-display-grid > .plant {
@@ -435,5 +502,31 @@ body {
 #social > a:visited {
     color: rgb(86, 120, 221);
     text-decoration: none;
+}
+
+#help-page {
+    z-index: 100;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: calc(100% - 48px);
+    height: 100%;
+    padding: 24px;
+
+    background: white;
+}
+
+#help-page > .close {
+    width: 100%;
+    text-align: right;
+
+    font-size: 1.2rem;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.swal2-container {
+    z-index: 99999;
 }
 </style>
