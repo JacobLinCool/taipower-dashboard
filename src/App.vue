@@ -47,57 +47,70 @@
                             ></div>
                         </h2>
                         <div
-                            class="plant"
-                            v-for="plant of plants"
-                            :key="plant.name"
-                            tabindex="0"
+                            :class="
+                                'plants-display-' + (fold ? 'normal' : 'grid')
+                            "
                         >
-                            <h3
-                                :class="
-                                    plant.now
-                                        ? 'plant-generating'
-                                        : 'plant-not-generating'
-                                "
+                            <div
+                                class="plant"
+                                v-for="plant of plants"
+                                :key="plant.name"
+                                tabindex="0"
                             >
-                                {{ plant.name }}
-                            </h3>
-                            <div class="plant-data">
-                                <div>
-                                    <span class="label">淨發電量</span>
-                                    <span class="value"
-                                        >{{ plant.now }}
-                                        <span style="font-size: 1rem"
-                                            >MW</span
-                                        ></span
-                                    >
-                                </div>
-                                <div>
-                                    <span class="label">裝置容量</span>
-                                    <span class="value"
-                                        >{{ plant.max }}
-                                        <span style="font-size: 1rem"
-                                            >MW</span
-                                        ></span
-                                    >
-                                </div>
-                                <div>
-                                    <span class="label">備註</span>
-                                    <span class="value">{{
-                                        plant.description || "沒有備註"
-                                    }}</span>
+                                <h3
+                                    :class="
+                                        plant.now
+                                            ? 'plant-generating'
+                                            : 'plant-not-generating'
+                                    "
+                                >
+                                    {{ plant.name }}
+                                </h3>
+                                <div class="plant-data">
+                                    <div>
+                                        <span class="label">淨發電量</span>
+                                        <span class="value"
+                                            >{{ plant.now }}
+                                            <span style="font-size: 1rem"
+                                                >MW</span
+                                            ></span
+                                        >
+                                    </div>
+                                    <div>
+                                        <span class="label">裝置容量</span>
+                                        <span class="value"
+                                            >{{ plant.max }}
+                                            <span style="font-size: 1rem"
+                                                >MW</span
+                                            ></span
+                                        >
+                                    </div>
+                                    <div>
+                                        <span class="label">備註</span>
+                                        <span
+                                            :class="
+                                                plant.description
+                                                    ? 'value'
+                                                    : 'no-value'
+                                            "
+                                            >{{
+                                                plant.description || "沒有備註"
+                                            }}</span
+                                        >
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div id="social">
-                    <a
-                        href="https://github.com/JacobLinCool/taipower-dashboard"
-                        target="_blank"
-                    >
-                        Github
-                    </a>
-                </div>
+            </div>
+            <div id="social">
+                <a
+                    href="https://github.com/JacobLinCool/taipower-dashboard"
+                    target="_blank"
+                >
+                    Source Code on GitHub
+                </a>
             </div>
         </div>
     </div>
@@ -107,6 +120,21 @@
 import swal from "sweetalert2";
 import { ref, onMounted } from "vue";
 import { get_data } from "./js/data.js";
+
+let config = {
+    fold: true,
+};
+
+try {
+    config.fold = window.innerWidth < 1080;
+    if (JSON.parse(new URLSearchParams(location.search).get("fold")) !== null) {
+        config.fold = !!JSON.parse(
+            new URLSearchParams(location.search).get("fold")
+        );
+    }
+} catch (e) {}
+
+const fold = config.fold;
 
 const taipower = ref(false);
 const get_taipower_data = async () => {
@@ -324,6 +352,13 @@ body {
     background: rgb(0, 0, 0);
 }
 
+.plants-display-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-rows: auto;
+    grid-gap: 10px;
+}
+
 .plant {
     height: 30px;
     margin: 4px 0;
@@ -335,7 +370,8 @@ body {
 }
 
 .plant:hover,
-.plant:focus {
+.plant:focus,
+.plants-display-grid > .plant {
     height: 180px;
     padding: 0 10px;
     box-shadow: 0px 2px 6px 0px grey;
@@ -348,7 +384,8 @@ body {
 }
 
 .plant:hover > h3,
-.plant:focus > h3 {
+.plant:focus > h3,
+.plants-display-grid > .plant > h3 {
     margin: 0 0 8px;
     font-size: 1.5rem;
 }
@@ -368,8 +405,13 @@ body {
     justify-content: center;
 }
 
-.plant > .plant-data > div > .value {
+.plant > .plant-data > div > .value,
+.plant > .plant-data > div > .no-value {
     font-size: 32px;
+}
+
+.plant > .plant-data > div > .no-value {
+    color: rgb(180, 180, 180);
 }
 
 .plant-not-generating {
@@ -385,5 +427,13 @@ body {
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
+}
+
+#social > a,
+#social > a:hover,
+#social > a:focus,
+#social > a:visited {
+    color: rgb(86, 120, 221);
+    text-decoration: none;
 }
 </style>
