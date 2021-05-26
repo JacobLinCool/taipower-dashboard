@@ -2,119 +2,133 @@
     <div id="max-container">
         <div id="white-paper">
             <div id="head">
-                <div class="front" v-if="taipower">
-                    <div class="help" @click="show_help = !show_help">
-                        <span>說明</span>
-                    </div>
-                    <div class="usage">
-                        <span id="usage-label">總用電量 / 總發電量 (MW)</span>
-                        <span id="usage-value"
-                            >{{ taipower.usage.current }} /
-                            {{ parseInt(taipower.statistics.total) }}
-                        </span>
-                    </div>
-                    <div class="time">
-                        <span
-                            >最新資料
-                            {{ taipower.time.replaceAll(/-/g, " / ") }}
-                        </span>
-                    </div>
-                </div>
-                <div class="back" v-if="taipower">
-                    <div class="usage-percentage">
-                        {{ taipower.usage.percentage }}<span>%</span>
-                    </div>
-                </div>
-            </div>
-            <div id="body" v-if="taipower">
-                <div id="plants-wrap" :class="`${color ? 'color-card' : ''}`">
-                    <div
-                        class="plant-type-wrap"
-                        v-for="[type, plants] of Object.entries(
-                            taipower.plants
-                        )"
-                        :key="type"
-                    >
-                        <h2 class="plant-type-name">
-                            {{ type }}
-                            <span> {{ taipower.statistics[type] }} (MW) </span>
-                            <div
-                                :class="'line ' + type"
-                                :style="{
-                                    width:
-                                        (taipower.statistics[type] /
-                                            taipower.statistics.total) *
-                                            100 +
-                                        '%',
-                                }"
-                            ></div>
-                        </h2>
-                        <div
-                            :class="`plants-display-${
-                                fold ? 'normal' : 'grid'
-                            }`"
-                        >
-                            <div
-                                v-for="plant of plants"
-                                :class="`plant ${
-                                    plant.percentage >= 80
-                                        ? 'high'
-                                        : plant.percentage >= 40
-                                        ? 'medium'
-                                        : plant.percentage > 0
-                                        ? 'low'
-                                        : 'zero'
-                                }-usage`"
-                                :key="plant.name"
-                                tabindex="0"
+                <transition name="fade-top-down">
+                    <div class="front" v-if="taipower">
+                        <div class="help" @click="show_help = !show_help">
+                            <span>說明</span>
+                        </div>
+                        <div class="usage">
+                            <span id="usage-label"
+                                >總用電量 / 總發電量 (MW)</span
                             >
-                                <h3
-                                    :class="
-                                        plant.now
-                                            ? 'plant-generating'
-                                            : 'plant-not-generating'
-                                    "
+                            <span id="usage-value"
+                                >{{ taipower.usage.current }} /
+                                {{ parseInt(taipower.statistics.total) }}
+                            </span>
+                        </div>
+                        <div class="time">
+                            <span
+                                >最新資料
+                                {{ taipower.time.replaceAll(/-/g, " / ") }}
+                            </span>
+                        </div>
+                    </div>
+                </transition>
+                <transition name="fade-bottom-up">
+                    <div class="back" v-if="taipower">
+                        <div class="usage-percentage">
+                            {{ taipower.usage.percentage }}<span>%</span>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+            <transition name="fade">
+                <div id="body" v-if="taipower">
+                    <div
+                        id="plants-wrap"
+                        :class="`${color ? 'color-card' : ''}`"
+                    >
+                        <div
+                            class="plant-type-wrap"
+                            v-for="[type, plants] of Object.entries(
+                                taipower.plants
+                            )"
+                            :key="type"
+                        >
+                            <h2 class="plant-type-name">
+                                {{ type }}
+                                <span>
+                                    {{ taipower.statistics[type] }} (MW)
+                                </span>
+                                <div
+                                    :class="'line ' + type"
+                                    :style="{
+                                        width:
+                                            (taipower.statistics[type] /
+                                                taipower.statistics.total) *
+                                                100 +
+                                            '%',
+                                    }"
+                                ></div>
+                            </h2>
+                            <div
+                                :class="`plants-display-${
+                                    fold ? 'normal' : 'grid'
+                                }`"
+                            >
+                                <div
+                                    v-for="plant of plants"
+                                    :class="`plant ${
+                                        plant.percentage >= 80
+                                            ? 'high'
+                                            : plant.percentage >= 40
+                                            ? 'medium'
+                                            : plant.percentage > 0
+                                            ? 'low'
+                                            : 'zero'
+                                    }-usage`"
+                                    :key="plant.name"
+                                    tabindex="0"
                                 >
-                                    {{ plant.name }}
-                                </h3>
-                                <div class="plant-data">
-                                    <div>
-                                        <span class="label">淨發電量</span>
-                                        <span class="value"
-                                            >{{ plant.now }}
-                                            <span style="font-size: 1rem"
-                                                >MW</span
-                                            ></span
-                                        >
-                                    </div>
-                                    <div>
-                                        <span class="label">裝置容量</span>
-                                        <span class="value"
-                                            >{{ plant.max }}
-                                            <span style="font-size: 1rem"
-                                                >MW</span
-                                            ></span
-                                        >
-                                    </div>
-                                    <div>
-                                        <span class="label">備註</span>
-                                        <span
-                                            :class="
-                                                plant.description
-                                                    ? 'value'
-                                                    : 'no-value'
-                                            "
-                                            >{{
-                                                plant.description || "沒有備註"
-                                            }}</span
-                                        >
+                                    <h3
+                                        :class="
+                                            plant.now
+                                                ? 'plant-generating'
+                                                : 'plant-not-generating'
+                                        "
+                                    >
+                                        {{ plant.name }}
+                                    </h3>
+                                    <div class="plant-data">
+                                        <div>
+                                            <span class="label">淨發電量</span>
+                                            <span class="value"
+                                                >{{ plant.now }}
+                                                <span style="font-size: 1rem"
+                                                    >MW</span
+                                                ></span
+                                            >
+                                        </div>
+                                        <div>
+                                            <span class="label">裝置容量</span>
+                                            <span class="value"
+                                                >{{ plant.max }}
+                                                <span style="font-size: 1rem"
+                                                    >MW</span
+                                                ></span
+                                            >
+                                        </div>
+                                        <div>
+                                            <span class="label">備註</span>
+                                            <span
+                                                :class="
+                                                    plant.description
+                                                        ? 'value'
+                                                        : 'no-value'
+                                                "
+                                                >{{
+                                                    plant.description ||
+                                                    "沒有備註"
+                                                }}</span
+                                            >
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </transition>
             <div id="social">
                 <a
                     href="https://github.com/JacobLinCool/taipower-dashboard"
@@ -123,10 +137,14 @@
                     Source Code on GitHub
                 </a>
             </div>
-            <div id="help-page" v-show="show_help">
-                <div class="close" @click="show_help = !show_help">關閉</div>
-                <Help></Help>
-            </div>
+            <transition name="fade-top-down" :duration="150">
+                <div id="help-page" v-show="show_help">
+                    <div class="close" @click="show_help = !show_help">
+                        關閉
+                    </div>
+                    <Help></Help>
+                </div>
+            </transition>
         </div>
     </div>
 </template>
@@ -174,7 +192,7 @@ const get_taipower_data = async () => {
         toast: true,
         position: "top-end",
         showConfirmButton: false,
-        timer: 3000,
+        timer: 5000,
     });
     taipower.value = await get_data();
     swal.fire({
@@ -183,7 +201,7 @@ const get_taipower_data = async () => {
         toast: true,
         position: "top-end",
         showConfirmButton: false,
-        timer: 3000,
+        timer: 1500,
     });
 };
 onMounted(() => {
@@ -196,6 +214,8 @@ onMounted(() => {
 </script>
 
 <style>
+@import "./css/fade.css";
+
 * {
     position: relative;
 }
