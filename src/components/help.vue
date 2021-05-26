@@ -2,6 +2,12 @@
     <h1>說明</h1>
     <div>
       試著在台電網站被連爆的時候有個替代資訊來源。<br>
+      如果有時候 總用電量 > 總發電量 ，可能是因為台電兩者數據時間差（較常發生於 XX:X0 ~ XX:X5 之間，發電數據可能較用電數據慢 5 分鐘），但也不能完全排除是 API 問題 或 台電數據問題。 <br>
+      可於 <a href="https://www.taipower.com.tw/d006/loadGraph/loadGraph/genshx_.html" target="_blank">台電各機組發電量頁面</a> 再次確認。<br> 
+      已知該網頁 水力發電各機組加總 有時與 水力發電總發電量(小計) 對不起來。 (2021.05.26 13:00 發現) <br>
+    </div>
+    <div>
+    <h1>輔助功能</h1>
       <h2>背景顏色 <small>(color: true | false)</small></h2>
       <p>
         預設值： 啟用
